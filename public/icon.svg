@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <rect width="512" height="512" rx="80" fill="#0a2035"/>
+  <!-- Anchor ring -->
+  <circle cx="256" cy="148" r="36" fill="none" stroke="#c9a84c" stroke-width="22"/>
+  <!-- Anchor vertical bar -->
+  <line x1="256" y1="184" x2="256" y2="380" stroke="#c9a84c" stroke-width="22" stroke-linecap="round"/>
+  <!-- Anchor crossbar -->
+  <line x1="168" y1="220" x2="344" y2="220" stroke="#c9a84c" stroke-width="22" stroke-linecap="round"/>
+  <!-- Anchor left fluke -->
+  <path d="M256 380 Q210 360 178 390 Q168 400 176 412 Q200 440 256 420" fill="none" stroke="#c9a84c" stroke-width="22" stroke-linecap="round" stroke-linejoin="round"/>
+  <!-- Anchor right fluke -->
+  <path d="M256 380 Q302 360 334 390 Q344 400 336 412 Q312 440 256 420" fill="none" stroke="#c9a84c" stroke-width="22" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>

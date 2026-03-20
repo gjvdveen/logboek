@@ -1,0 +1,29 @@
+{
+  "name": "Vaartocht Logboek",
+  "short_name": "Logboek",
+  "description": "Boot logboek voor vaartochten, brandstof en reparaties",
+  "start_url": "/logboek/",
+  "scope": "/logboek/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#0d2b45",
+  "theme_color": "#0d2b45",
+  "icons": [
+    {
+      "src": "/logboek/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/logboek/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/logboek/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
