@@ -2431,3 +2431,77 @@ textarea.form-control {
   padding: 0 0 0 6px;
   text-decoration: underline;
 }
+
+/* ── Tab icons (hidden on desktop) ── */
+.tab-icon { display: none; }
+.tab-text  { display: inline; }
+
+/* ── Mobile layout ── */
+@media (max-width: 640px) {
+  /* Compact header */
+  .header {
+    height: 52px;
+    padding: 0 12px;
+  }
+  .header-title    { font-size: 1rem; }
+  .header-subtitle { display: none; }
+
+  /* Add button: round icon-only */
+  .btn-add {
+    padding: 0;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    justify-content: center;
+    font-size: 1.4rem;
+    line-height: 1;
+    flex-shrink: 0;
+  }
+  .btn-add-text { display: none; }
+  .btn-add::after { content: '+'; }
+
+  /* Tab bar: fixed at bottom, icon + short label */
+  .tab-bar {
+    position: fixed;
+    top: auto;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 200;
+    border-top: 2px solid var(--gold);
+    border-bottom: none;
+    overflow-x: visible;
+  }
+
+  .tab {
+    flex-direction: column;
+    gap: 2px;
+    padding: 6px 2px;
+    font-size: 0.6rem;
+    letter-spacing: 0;
+    border-bottom: none;
+    border-top: 3px solid transparent;
+  }
+  .tab-active {
+    border-bottom-color: transparent;
+    border-top-color: var(--amber);
+  }
+
+  .tab-icon { display: block; font-size: 1.2rem; line-height: 1; }
+  .tab-text  {
+    display: block;
+    max-width: 60px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  /* Push content above fixed bottom nav */
+  .main { padding-bottom: 80px; }
+
+  /* Hero smaller on mobile */
+  .hero { height: 140px; }
+
+  /* Hero sticks below compact header */
+  .tab-bar { top: auto; }
+}

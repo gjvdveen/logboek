@@ -283,13 +283,13 @@ export default function App() {
           {lang === 'nl' ? '🇬🇧' : '🇳🇱'}
         </button>
         {view === 'list' && section === 'repairs' && (
-          <button className="btn btn-primary" onClick={() => setView('pick')}>{t('nav.add.repair')}</button>
+          <button className="btn btn-primary btn-add" onClick={() => setView('pick')}><span className="btn-add-text">{t('nav.add.repair')}</span></button>
         )}
         {view === 'list' && section !== 'settings' && section !== 'repairs' && addLabels[section] && (
-          <button className="btn btn-primary" onClick={goNew}>{addLabels[section]}</button>
+          <button className="btn btn-primary btn-add" onClick={goNew}><span className="btn-add-text">{addLabels[section]}</span></button>
         )}
         {view === 'list' && section === 'settings' && settingsAddLabel[settingsTab] && (
-          <button className="btn btn-primary" onClick={goNew}>{settingsAddLabel[settingsTab]}</button>
+          <button className="btn btn-primary btn-add" onClick={goNew}><span className="btn-add-text">{settingsAddLabel[settingsTab]}</span></button>
         )}
       </header>
 
@@ -304,11 +304,11 @@ export default function App() {
       )}
 
       <nav className="tab-bar">
-        <button className={`tab${section === 'reizen'   ? ' tab-active' : ''}`} onClick={() => goSection('reizen')}>{t('nav.reizen')}</button>
-        <button className={`tab${section === 'trips'    ? ' tab-active' : ''}`} onClick={() => goSection('trips')}>{t('nav.trips')}</button>
-        <button className={`tab${section === 'repairs'  ? ' tab-active' : ''}`} onClick={() => goSection('repairs')}>{t('nav.repairs')}</button>
-        <button className={`tab${section === 'stats'    ? ' tab-active' : ''}`} onClick={() => goSection('stats')}>{t('nav.stats')}</button>
-        <button className={`tab${section === 'settings' ? ' tab-active' : ''}`} onClick={() => goSection('settings')}>{t('nav.settings')}</button>
+        <button className={`tab${section === 'reizen'   ? ' tab-active' : ''}`} onClick={() => goSection('reizen')}><span className="tab-icon">⛵</span><span className="tab-text">{t('nav.reizen')}</span></button>
+        <button className={`tab${section === 'trips'    ? ' tab-active' : ''}`} onClick={() => goSection('trips')}><span className="tab-icon">🧭</span><span className="tab-text">{t('nav.trips')}</span></button>
+        <button className={`tab${section === 'repairs'  ? ' tab-active' : ''}`} onClick={() => goSection('repairs')}><span className="tab-icon">💶</span><span className="tab-text">{t('nav.repairs')}</span></button>
+        <button className={`tab${section === 'stats'    ? ' tab-active' : ''}`} onClick={() => goSection('stats')}><span className="tab-icon">📊</span><span className="tab-text">{t('nav.stats')}</span></button>
+        <button className={`tab${section === 'settings' ? ' tab-active' : ''}`} onClick={() => goSection('settings')}><span className="tab-icon">⚙️</span><span className="tab-text">{t('nav.settings')}</span></button>
       </nav>
 
       <main className="main">
