@@ -1,0 +1,464 @@
+<!doctype html>
+<html lang="nl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Vaartocht Logboek – Digitaal scheepsdagboek voor motorjachten</title>
+  <meta name="description" content="Houd eenvoudig bij wanneer je gevaren hebt, hoeveel brandstof je verbruikt, wat het onderhoud kost en wanneer het volgende onderhoud gepland staat. Gratis PWA voor iPhone en Android." />
+  <style>
+    :root {
+      --navy:  #0a2035;
+      --navy2: #112d47;
+      --ocean: #1a6b8a;
+      --sky:   #4a9ebb;
+      --gold:  #c9a84c;
+      --gold-l:#e8cc7a;
+      --bg:    #eef2f6;
+      --white: #ffffff;
+      --text:  #1a2332;
+      --muted: #6b7a8d;
+      --border:#d1dce8;
+      --r:     10px;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+    }
+
+    /* ── NAV ── */
+    nav {
+      background: var(--navy);
+      border-bottom: 2px solid var(--gold);
+      padding: 0 24px;
+      height: 60px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    .nav-brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      color: var(--gold-l);
+      font-weight: 700;
+      font-size: 1.1rem;
+      font-variant: small-caps;
+      letter-spacing: 0.06em;
+      text-decoration: none;
+    }
+    .nav-brand span { font-size: 1.4rem; }
+    .nav-cta {
+      background: var(--gold);
+      color: #1a0e00;
+      font-weight: 700;
+      padding: 8px 20px;
+      border-radius: 6px;
+      text-decoration: none;
+      font-size: 0.9rem;
+      transition: opacity .15s;
+    }
+    .nav-cta:hover { opacity: .85; }
+
+    /* ── HERO ── */
+    .hero {
+      background: linear-gradient(160deg, var(--navy) 0%, #1a3a5c 55%, #0d4a6b 100%);
+      color: white;
+      text-align: center;
+      padding: 100px 24px 80px;
+      position: relative;
+      overflow: hidden;
+    }
+    .hero::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23c9a84c' fill-opacity='0.05'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+    }
+    .hero-badge {
+      display: inline-block;
+      background: rgba(201,168,76,.15);
+      border: 1px solid rgba(201,168,76,.4);
+      color: var(--gold-l);
+      font-size: 0.78rem;
+      font-weight: 600;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      padding: 5px 14px;
+      border-radius: 20px;
+      margin-bottom: 24px;
+    }
+    .hero h1 {
+      font-size: clamp(2rem, 5vw, 3.2rem);
+      font-weight: 800;
+      font-variant: small-caps;
+      letter-spacing: 0.08em;
+      color: var(--gold-l);
+      line-height: 1.15;
+      margin-bottom: 20px;
+    }
+    .hero p {
+      font-size: clamp(1rem, 2.5vw, 1.2rem);
+      opacity: .8;
+      max-width: 560px;
+      margin: 0 auto 40px;
+    }
+    .hero-actions {
+      display: flex;
+      gap: 14px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+    .btn-hero {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 14px 32px;
+      border-radius: 8px;
+      font-weight: 700;
+      font-size: 1rem;
+      text-decoration: none;
+      transition: transform .12s, opacity .15s;
+    }
+    .btn-hero:hover { transform: translateY(-2px); opacity: .9; }
+    .btn-hero-primary { background: var(--gold); color: #1a0e00; }
+    .btn-hero-secondary { background: rgba(255,255,255,.1); color: white; border: 1px solid rgba(255,255,255,.3); }
+    .hero-note {
+      margin-top: 20px;
+      font-size: 0.8rem;
+      opacity: .5;
+    }
+
+    /* ── WAVE DIVIDER ── */
+    .wave {
+      display: block;
+      width: 100%;
+      height: 60px;
+      background: var(--navy);
+    }
+    .wave-bottom {
+      background: var(--bg);
+      fill: var(--bg);
+    }
+    .wave svg { display: block; width: 100%; }
+
+    /* ── SECTION ── */
+    section { padding: 80px 24px; }
+    .container { max-width: 900px; margin: 0 auto; }
+    .section-label {
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--ocean);
+      margin-bottom: 10px;
+    }
+    .section-title {
+      font-size: clamp(1.6rem, 3.5vw, 2.2rem);
+      font-weight: 800;
+      color: var(--navy);
+      margin-bottom: 14px;
+    }
+    .section-sub {
+      font-size: 1.05rem;
+      color: var(--muted);
+      max-width: 560px;
+      margin-bottom: 56px;
+    }
+
+    /* ── FEATURES GRID ── */
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 24px;
+    }
+    .feature-card {
+      background: var(--white);
+      border-radius: var(--r);
+      padding: 28px 24px;
+      box-shadow: 0 2px 12px rgba(10,32,53,.1);
+      border-top: 3px solid var(--gold);
+      transition: transform .12s, box-shadow .12s;
+    }
+    .feature-card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 8px 24px rgba(10,32,53,.16);
+    }
+    .feature-icon { font-size: 2rem; margin-bottom: 14px; }
+    .feature-title {
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: var(--navy);
+      margin-bottom: 8px;
+    }
+    .feature-desc { font-size: 0.9rem; color: var(--muted); line-height: 1.6; }
+
+    /* ── HOW IT WORKS ── */
+    .steps { background: var(--navy); color: white; }
+    .steps .section-title { color: var(--gold-l); }
+    .steps .section-sub   { color: rgba(255,255,255,.6); }
+    .steps-list {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 32px;
+    }
+    .step { text-align: center; }
+    .step-num {
+      width: 52px;
+      height: 52px;
+      border-radius: 50%;
+      background: rgba(201,168,76,.15);
+      border: 2px solid var(--gold);
+      color: var(--gold-l);
+      font-size: 1.3rem;
+      font-weight: 800;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 16px;
+    }
+    .step-title { font-weight: 700; font-size: 1rem; margin-bottom: 8px; color: white; }
+    .step-desc  { font-size: 0.88rem; color: rgba(255,255,255,.6); }
+
+    /* ── FUNCTIES LIJST ── */
+    .functies-bg { background: var(--white); }
+    .functies-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 14px;
+    }
+    .functie-row {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      padding: 14px 16px;
+      background: var(--bg);
+      border-radius: 8px;
+    }
+    .functie-check {
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      background: #22c55e;
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.75rem;
+      font-weight: 700;
+      flex-shrink: 0;
+      margin-top: 1px;
+    }
+    .functie-text { font-size: 0.92rem; color: var(--text); }
+    .functie-text strong { display: block; font-weight: 700; color: var(--navy); }
+
+    /* ── CTA ── */
+    .cta-section {
+      background: linear-gradient(135deg, var(--navy) 0%, #1a3a5c 100%);
+      color: white;
+      text-align: center;
+      padding: 80px 24px;
+    }
+    .cta-section h2 {
+      font-size: clamp(1.6rem, 4vw, 2.4rem);
+      font-weight: 800;
+      color: var(--gold-l);
+      margin-bottom: 16px;
+    }
+    .cta-section p {
+      font-size: 1.05rem;
+      opacity: .75;
+      margin-bottom: 36px;
+      max-width: 480px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+    .install-steps {
+      display: flex;
+      gap: 10px;
+      justify-content: center;
+      flex-wrap: wrap;
+      margin-top: 32px;
+    }
+    .install-step {
+      background: rgba(255,255,255,.08);
+      border: 1px solid rgba(255,255,255,.15);
+      border-radius: 8px;
+      padding: 10px 18px;
+      font-size: 0.85rem;
+      color: rgba(255,255,255,.8);
+    }
+    .install-step strong { display: block; color: var(--gold-l); font-size: 0.78rem; letter-spacing: .05em; text-transform: uppercase; margin-bottom: 3px; }
+
+    /* ── FOOTER ── */
+    footer {
+      background: #060f18;
+      color: rgba(255,255,255,.4);
+      text-align: center;
+      padding: 28px 24px;
+      font-size: 0.82rem;
+    }
+    footer a { color: var(--gold); text-decoration: none; }
+    footer a:hover { text-decoration: underline; }
+
+    @media (max-width: 600px) {
+      .hero { padding: 70px 16px 60px; }
+      section { padding: 60px 16px; }
+      .steps { padding: 60px 16px; }
+      .cta-section { padding: 60px 16px; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <a href="#" class="nav-brand"><span>⚓</span> Vaartocht Logboek</a>
+  <a href="/logboek/" class="nav-cta">Open app →</a>
+</nav>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-badge">Gratis · Offline · Installeerbaar op iPhone</div>
+  <h1>Vaartocht Logboek</h1>
+  <p>Het digitale scheepsdagboek voor motorjachtliefhebbers. Leg elke tocht vast, houd brandstof en kosten bij en mis nooit meer een onderhoudsbeurt.</p>
+  <div class="hero-actions">
+    <a href="/logboek/" class="btn-hero btn-hero-primary">⛵ Open de app</a>
+    <a href="#functies" class="btn-hero btn-hero-secondary">Bekijk functies ↓</a>
+  </div>
+  <p class="hero-note">Geen account nodig · Werkt zonder internet · Data blijft op jouw apparaat</p>
+</div>
+
+<!-- WAVE -->
+<div class="wave">
+  <svg viewBox="0 0 1440 60" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+    <path class="wave-bottom" d="M0,60 L0,20 Q180,60 360,30 Q540,0 720,30 Q900,60 1080,30 Q1260,0 1440,30 L1440,60 Z"/>
+  </svg>
+</div>
+
+<!-- FEATURES -->
+<section id="functies">
+  <div class="container">
+    <p class="section-label">Wat kan de app</p>
+    <h2 class="section-title">Alles voor jouw logboek</h2>
+    <p class="section-sub">Van vertrek tot aankomst, van tankbeurt tot onderhoudsbeurt — één overzicht voor je hele seizoen.</p>
+
+    <div class="features-grid">
+      <div class="feature-card">
+        <div class="feature-icon">🗺️</div>
+        <div class="feature-title">Reizen & dagtochten</div>
+        <div class="feature-desc">Registreer vertrek- en aankomsthaven, vaaruren, motoruren en bemanning. Voeg meerdere dagtochten samen tot een reis.</div>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">⛽</div>
+        <div class="feature-title">Brandstof & exploitatie</div>
+        <div class="feature-desc">Houd elke tankbeurt bij inclusief liters, prijs en motorstand. Registreer reparaties, havengeld en overige kosten.</div>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">🔧</div>
+        <div class="feature-title">Onderhoudsschema</div>
+        <div class="feature-desc">Stel intervallen in op motoruren én op dagen. De app berekent automatisch wanneer olie, impeller of tandriemset aan de beurt is.</div>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">📊</div>
+        <div class="feature-title">Rapportages</div>
+        <div class="feature-desc">Bekijk statistieken per seizoen: gevaren mijlen, brandstofverbruik, kosten per categorie. Exporteer naar PDF.</div>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">👥</div>
+        <div class="feature-title">Bemanning</div>
+        <div class="feature-desc">Sla bemanningsleden op en koppel ze aan tochten. Snel overzicht van wie er mee was.</div>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">💾</div>
+        <div class="feature-title">Backup & herstel</div>
+        <div class="feature-desc">Exporteer al je data als JSON-bestand. Importeer op een ander apparaat of herstel na een reset.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- HOW IT WORKS -->
+<div class="steps">
+  <section>
+    <div class="container">
+      <p class="section-label">Hoe werkt het</p>
+      <h2 class="section-title">In vier stappen aan de slag</h2>
+      <p class="section-sub">Geen installatie, geen account, geen abonnement.</p>
+
+      <div class="steps-list">
+        <div class="step">
+          <div class="step-num">1</div>
+          <div class="step-title">Open de app</div>
+          <div class="step-desc">Surf naar gjvdveen.github.io/logboek in Safari op je iPhone.</div>
+        </div>
+        <div class="step">
+          <div class="step-num">2</div>
+          <div class="step-title">Zet op beginscherm</div>
+          <div class="step-desc">Tik op Delen → Zet op beginscherm. De app gedraagt zich als een native app.</div>
+        </div>
+        <div class="step">
+          <div class="step-num">3</div>
+          <div class="step-title">Vul je boot in</div>
+          <div class="step-desc">Ga naar Instellingen en vul de naam, het type en een foto van je boot in.</div>
+        </div>
+        <div class="step">
+          <div class="step-num">4</div>
+          <div class="step-title">Log je eerste tocht</div>
+          <div class="step-desc">Tik op ⛵ Reizen of 🧭 Dagtochten en voeg je eerste vaartocht toe.</div>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
+
+<!-- FUNCTIES LIJST -->
+<section class="functies-bg">
+  <div class="container">
+    <p class="section-label">Volledig overzicht</p>
+    <h2 class="section-title">Alles inbegrepen, niets te betalen</h2>
+    <p class="section-sub">De app is volledig gratis en werkt zonder account of abonnement.</p>
+
+    <div class="functies-grid">
+      <div class="functie-row"><div class="functie-check">✓</div><div class="functie-text"><strong>Reizen en dagtochten</strong>Route, vaaruren, motoruren, bemanning, dagboek</div></div>
+      <div class="functie-row"><div class="functie-check">✓</div><div class="functie-text"><strong>Brandstofregistratie</strong>Liters, prijs, pompstation, motorstand</div></div>
+      <div class="functie-row"><div class="functie-check">✓</div><div class="functie-text"><strong>Exploitatiekosten</strong>Reparaties, havengeld, verzekering, diversen</div></div>
+      <div class="functie-row"><div class="functie-check">✓</div><div class="functie-text"><strong>Onderhoudsplanning</strong>Intervallen op uren én datum, statusverkleuren</div></div>
+      <div class="functie-row"><div class="functie-check">✓</div><div class="functie-text"><strong>Seizoensoverzicht</strong>Statistieken per seizoenstart</div></div>
+      <div class="functie-row"><div class="functie-check">✓</div><div class="functie-text"><strong>PDF rapportage</strong>Overzicht afdrukken met bootfoto</div></div>
+      <div class="functie-row"><div class="functie-check">✓</div><div class="functie-text"><strong>Installeerbaar op iPhone</strong>Werkt als native app, ook offline</div></div>
+      <div class="functie-row"><div class="functie-check">✓</div><div class="functie-text"><strong>JSON backup</strong>Exporteer en importeer al je data</div></div>
+      <div class="functie-row"><div class="functie-check">✓</div><div class="functie-text"><strong>Nederlands en Engels</strong>Taal in te stellen via de app</div></div>
+      <div class="functie-row"><div class="functie-check">✓</div><div class="functie-text"><strong>Demo modus</strong>Probeer de app met voorbeelddata</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<div class="cta-section">
+  <div class="container">
+    <h2>Klaar om te beginnen?</h2>
+    <p>Open de app in Safari, zet hem op je beginscherm en begin direct met loggen.</p>
+    <a href="/logboek/" class="btn-hero btn-hero-primary" style="display:inline-flex;">⛵ Open Vaartocht Logboek</a>
+
+    <div class="install-steps">
+      <div class="install-step"><strong>Stap 1</strong>Open in Safari</div>
+      <div class="install-step"><strong>Stap 2</strong>Tik op Delen ↑</div>
+      <div class="install-step"><strong>Stap 3</strong>Zet op beginscherm</div>
+      <div class="install-step"><strong>Stap 4</strong>Geniet van je logboek</div>
+    </div>
+  </div>
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <p>Vaartocht Logboek · Gebouwd voor motorjachtliefhebbers · <a href="/logboek/">Open de app</a></p>
+</footer>
+
+</body>
+</html>
